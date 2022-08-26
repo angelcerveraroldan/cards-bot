@@ -10,7 +10,7 @@ To run a command, send a message with the following format `<prefix> <command_na
 
 ## Commands
 
-### Heartbeat
+### 1. Heartbeat
 
 Command name: `heartbeat`
 
@@ -19,7 +19,7 @@ Command arguments: none
 This command is used to check if the bot is working, and reading messages as it should be. If the bot is online and working, it should reply "I'm alive!"
 
 
-### Find Pokemon card by id
+### 2. Find Pokemon card by id
 
 Command name: `pkm` or `pokemon`
 

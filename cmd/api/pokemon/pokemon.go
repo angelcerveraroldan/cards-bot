@@ -1,17 +1,16 @@
 package pokemon
 
 import (
-	"encoding/json"
 	"fmt"
 	"github.com/bwmarrin/discordgo"
-	"io"
-	"net/http"
+	"strings"
 )
 
 const (
 	baseURL = "https://api.pokemontcg.io/v2"
 )
 
+// GetCardData -> Use appropriate function to get card data
 func GetCardData(args []string, s *discordgo.Session, m *discordgo.MessageCreate) {
 	getMethod := args[0]
 
@@ -23,47 +22,68 @@ func GetCardData(args []string, s *discordgo.Session, m *discordgo.MessageCreate
 			break
 		}
 
-		if card.Name == "" {
-			printError("Could not find card", s, m)
-			break
-		}
-
-		printCardData(card, s, m)
+		card.printCardData(s, m)
 	}
 
 }
 
-// id ex xy1-1
-func getCardById(id string) (Card, error) {
-	URL := baseURL + "/cards/" + id
-
-	response, err := http.Get(URL)
-	if err != nil {
-		fmt.Println("Error reading url: ", err)
-		return Card{}, err
+func (card Card) otherInformation() string {
+	var level string
+	level = card.Level
+	if level == "" {
+		level = "N/A"
 	}
-
-	responseData, err := io.ReadAll(response.Body)
-	if err != nil {
-		fmt.Println("Error getting data from url: ", err)
-		return Card{}, err
-	}
-
-	var rsp Response
-	err = json.Unmarshal(responseData, &rsp)
-	if err != nil {
-		fmt.Println("Could not unmarshal")
-		return Card{}, err
-	}
-
-	return rsp.Data, nil
+	return fmt.Sprintf(" - Supertype: %s\n - Level: %s\n - Hp: %s\n - Type/s: %s", card.Supertype, level, card.Hp, strings.Join(card.Types, ", "))
 }
 
 // URGENT TODO: Make this function print a prettier message, make this a method on type card?
-func printCardData(card Card, s *discordgo.Session, m *discordgo.MessageCreate) {
-	msg := fmt.Sprintf("Name: %s\nId: %s\nHp: %s\nTypes: %v", card.Name, card.Id, card.Hp, card.Types)
+func (card Card) printCardData(s *discordgo.Session, m *discordgo.MessageCreate) {
+	if card.Name == "" {
+		printError("Couldn't find card", s, m)
+		return
+	}
 
-	s.ChannelMessageSend(m.ChannelID, msg)
+	fields := []*discordgo.MessageEmbedField{
+		{
+			Name:   "Name",
+			Value:  card.Name,
+			Inline: false,
+		},
+		{
+			Name:   "Card ID",
+			Value:  card.Id,
+			Inline: true,
+		},
+		{
+			Name:   "Set ID",
+			Value:  card.Set.Id,
+			Inline: true,
+		},
+		{
+			Name:   "Set Name",
+			Value:  card.Set.Name,
+			Inline: true,
+		},
+		{
+			Name:   "Other information",
+			Value:  card.otherInformation(),
+			Inline: false,
+		},
+	}
+
+	_, err := s.ChannelMessageSendEmbed(m.ChannelID, &discordgo.MessageEmbed{
+		Title:       "Pokemon card",
+		Description: "Information on the requested card",
+		Color:       0x0099FF,
+		Image: &discordgo.MessageEmbedImage{
+			URL: card.Images.Small,
+		},
+		Fields: fields,
+	})
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
 }
 
 func printError(err string, s *discordgo.Session, m *discordgo.MessageCreate) {

@@ -1,17 +1,15 @@
 package pokemon
 
 import (
-	"encoding/json"
 	"fmt"
 	"github.com/bwmarrin/discordgo"
-	"io"
-	"net/http"
 )
 
 const (
 	baseURL = "https://api.pokemontcg.io/v2"
 )
 
+// GetCardData -> Use appropriate function to get card data
 func GetCardData(args []string, s *discordgo.Session, m *discordgo.MessageCreate) {
 	getMethod := args[0]
 
@@ -23,47 +21,23 @@ func GetCardData(args []string, s *discordgo.Session, m *discordgo.MessageCreate
 			break
 		}
 
-		if card.Name == "" {
-			printError("Could not find card", s, m)
-			break
-		}
-
-		printCardData(card, s, m)
+		card.printCardData(s, m)
 	}
 
 }
 
-// id ex xy1-1
-func getCardById(id string) (Card, error) {
-	URL := baseURL + "/cards/" + id
-
-	response, err := http.Get(URL)
-	if err != nil {
-		fmt.Println("Error reading url: ", err)
-		return Card{}, err
-	}
-
-	responseData, err := io.ReadAll(response.Body)
-	if err != nil {
-		fmt.Println("Error getting data from url: ", err)
-		return Card{}, err
-	}
-
-	var rsp Response
-	err = json.Unmarshal(responseData, &rsp)
-	if err != nil {
-		fmt.Println("Could not unmarshal")
-		return Card{}, err
-	}
-
-	return rsp.Data, nil
+func (card Card) ToMessage() string {
+	return fmt.Sprintf("Name: %s\nId: %s\nHp: %s\nTypes: %v", card.Name, card.Id, card.Hp, card.Types)
 }
 
 // URGENT TODO: Make this function print a prettier message, make this a method on type card?
-func printCardData(card Card, s *discordgo.Session, m *discordgo.MessageCreate) {
-	msg := fmt.Sprintf("Name: %s\nId: %s\nHp: %s\nTypes: %v", card.Name, card.Id, card.Hp, card.Types)
+func (card Card) printCardData(s *discordgo.Session, m *discordgo.MessageCreate) {
+	if card.Name == "" {
+		printError("Couldn't find card", s, m)
+		return
+	}
 
-	s.ChannelMessageSend(m.ChannelID, msg)
+	s.ChannelMessageSend(m.ChannelID, card.ToMessage())
 }
 
 func printError(err string, s *discordgo.Session, m *discordgo.MessageCreate) {

@@ -25,6 +25,8 @@ Command name: `pkm` or `pokemon`
 
 Command arguments: `id <id>`
 
-Example: `!h pkm id xy1-21` -> This will make the bot reply with the information on the card with id xy1-21
+Example:
+Response to command `!h pkm id xy1-2`:
 
-This command will make the bot retrieve the data of a pokemon card by id. In the near future, you will be able to find card information by name, and other paramenters.
+
+<img src="./docs/imgs/pokemon-card-by-ID.png" style="width:200px;"/>

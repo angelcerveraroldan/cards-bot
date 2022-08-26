@@ -88,7 +88,7 @@ type Card struct {
 }
 
 // TODO:
-// 	Place this functio in a more appropiate place
+// 	Place this method in a more appropiate place
 // 	Make method
 
 // Every card (of any game) will have this method, so that they can all be treated the same way

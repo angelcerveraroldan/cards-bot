@@ -32,13 +32,7 @@ func main() {
 	}
 
 	// This function will be run every time a message is sent into any channel that the commands can read
-	ds.AddHandler(func(s *discordgo.Session, m *discordgo.MessageCreate) {
-		messages := strings.Fields(m.Message.Content)
-
-		if messages[0] == prefix {
-			commands.RunCommand(messages[1:], s, m)
-		}
-	})
+	ds.AddHandler(messageHandler)
 
 	err = ds.Open()
 	if err != nil {
@@ -53,4 +47,16 @@ func main() {
 	<-sc
 
 	ds.Close()
+}
+
+func messageHandler(s *discordgo.Session, m *discordgo.MessageCreate) {
+	messages := strings.Fields(m.Message.Content)
+
+	if m.Author.Bot {
+		return
+	}
+
+	if messages[0] == prefix {
+		commands.RunCommand(messages[1:], s, m)
+	}
 }

@@ -3,6 +3,7 @@ package pokemon
 import (
 	"fmt"
 	"github.com/bwmarrin/discordgo"
+	"strings"
 )
 
 const (
@@ -26,8 +27,13 @@ func GetCardData(args []string, s *discordgo.Session, m *discordgo.MessageCreate
 
 }
 
-func (card Card) ToMessage() string {
-	return fmt.Sprintf("Name: %s\nId: %s\nHp: %s\nTypes: %v", card.Name, card.Id, card.Hp, card.Types)
+func (card Card) otherInformation() string {
+	var level string
+	level = card.Level
+	if level == "" {
+		level = "N/A"
+	}
+	return fmt.Sprintf(" - Supertype: %s\n - Level: %s\n - Hp: %s\n - Type/s: %s", card.Supertype, level, card.Hp, strings.Join(card.Types, ", "))
 }
 
 // URGENT TODO: Make this function print a prettier message, make this a method on type card?
@@ -37,7 +43,47 @@ func (card Card) printCardData(s *discordgo.Session, m *discordgo.MessageCreate)
 		return
 	}
 
-	s.ChannelMessageSend(m.ChannelID, card.ToMessage())
+	fields := []*discordgo.MessageEmbedField{
+		{
+			Name:   "Name",
+			Value:  card.Name,
+			Inline: false,
+		},
+		{
+			Name:   "Card ID",
+			Value:  card.Id,
+			Inline: true,
+		},
+		{
+			Name:   "Set ID",
+			Value:  card.Set.Id,
+			Inline: true,
+		},
+		{
+			Name:   "Set Name",
+			Value:  card.Set.Name,
+			Inline: true,
+		},
+		{
+			Name:   "Other information",
+			Value:  card.otherInformation(),
+			Inline: false,
+		},
+	}
+
+	_, err := s.ChannelMessageSendEmbed(m.ChannelID, &discordgo.MessageEmbed{
+		Title:       "Pokemon card",
+		Description: "Information on the requested card",
+		Color:       0x0099FF,
+		Image: &discordgo.MessageEmbedImage{
+			URL: card.Images.Small,
+		},
+		Fields: fields,
+	})
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
 }
 
 func printError(err string, s *discordgo.Session, m *discordgo.MessageCreate) {

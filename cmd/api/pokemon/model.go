@@ -5,6 +5,9 @@ type Response interface {
 	CardsResponse | CardResponse
 }
 
+// CardsResponse
+// The response given when there are multiple cards
+// E.g. Get card by name
 type CardsResponse struct {
 	Cards      []Card `json:"data"`
 	Page       int    `json:"page"`
@@ -13,10 +16,15 @@ type CardsResponse struct {
 	TotalCount int    `json:"totalCount"`
 }
 
+// CardResponse
+// The response given when there is onlt one card in the response
+// E.g. Get card by id
 type CardResponse struct {
 	Card Card `json:"data"`
 }
 
+// Card
+// Pokemon card response
 type Card struct {
 	Id        string   `json:"id"`
 	Name      string   `json:"name"`

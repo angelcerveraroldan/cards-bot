@@ -3,6 +3,7 @@ package pokemon
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/angelcerveraroldan/cards-bot/cmd/api"
 	"io"
 	"net/http"
 )
@@ -52,4 +53,26 @@ func getCardById(id string) (Card, error) {
 	return rsp.Card, nil
 }
 
-// Get card by name
+// Get card by parameters
+func GetCardsByParams(params []string) ([]Card, error) {
+	URL := baseURL + "/cards?q="
+
+	paramsMap := api.ParamsToMap(params, searchKeys)
+
+	for k, v := range paramsMap {
+		URL = fmt.Sprintf("%s%s\"%s\"", URL, k, v)
+	}
+
+	responseData, err := urlResponse(URL)
+	if err != nil {
+		return []Card{}, err
+	}
+
+	var rsp CardsResponse
+	err = unmarshal(responseData, &rsp)
+	if err != nil {
+		return []Card{}, err
+	}
+
+	return rsp.Cards, nil
+}

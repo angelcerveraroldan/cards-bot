@@ -32,6 +32,14 @@ func TestParamsToMap(t *testing.T) {
 				"id":   "13v1",
 			},
 		},
+		{
+			params:   strings.Fields("ignored name char*der hp [* TO 100]"),
+			keywords: strings.Fields("name hp"),
+			wanted: map[string]string{
+				"name": "char*der",
+				"hp":   "[* TO 100]",
+			},
+		},
 	}
 
 	for _, test := range tests {

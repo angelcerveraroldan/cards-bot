@@ -10,6 +10,11 @@ const (
 	baseURL = "https://api.pokemontcg.io/v2"
 )
 
+var (
+	// TODO: Add params such as attack.name or set.id
+	searchKeys = []string{"nam", "subtype", "hp"}
+)
+
 // GetCardData -> Use appropriate function to get card data
 func GetCardData(args []string, s *discordgo.Session, m *discordgo.MessageCreate) {
 	getMethod := args[0]

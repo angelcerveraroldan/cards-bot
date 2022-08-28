@@ -30,3 +30,15 @@ Response to command `!h pkm id xy1-2`:
 
 
 <img src="./docs/imgs/pokemon-card-by-ID.png" style="width:200px;"/>
+
+## Running this bot
+
+To run this bot, run:
+
+1. `docker build --tag docker-bot .` -> Builds binary
+2. `docker run --env-file .env docker-bot` -> Executes binary
+
+The env file, should look like:
+```
+TOKEN=<discord token>
+```

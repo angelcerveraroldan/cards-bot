@@ -1,6 +1,7 @@
 package pokemon
 
-// Response This will be used for generics, can make functions to handle both responses that have various cards, or just one card
+// Response
+// This will be used for generics, can make functions to handle both responses that have various cards, or just one card
 type Response interface {
 	CardsResponse | CardResponse
 }
@@ -17,7 +18,7 @@ type CardsResponse struct {
 }
 
 // CardResponse
-// The response given when there is onlt one card in the response
+// The response given when there is only one card in the response
 // E.g. Get card by id
 type CardResponse struct {
 	Card Card `json:"data"`

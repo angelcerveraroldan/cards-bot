@@ -2,6 +2,9 @@ package api
 
 import "fmt"
 
+// Contains
+//
+// Check if slice of type A contains item
 func Contains[A comparable](slice []A, item A) bool {
 	for _, a := range slice {
 		if a == item {
@@ -12,6 +15,12 @@ func Contains[A comparable](slice []A, item A) bool {
 	return false
 }
 
+// ParamsToMap
+//
+// This function will turn a slice of strings into a map from string to string.
+//
+// It takes two parameters, one being the slice of strings from which we want to generate the map
+// the other one being the keys for the map.
 func ParamsToMap(params []string, keywords []string) map[string]string {
 	paramsMap := make(map[string]string)
 	currentKey := ""

@@ -47,13 +47,18 @@ func main() {
 	ds.Close()
 }
 
+// messageHandler
+//
+// This function will be run when any message is sent.
 func messageHandler(s *discordgo.Session, m *discordgo.MessageCreate) {
 	messages := strings.Fields(m.Message.Content)
 
+	// Ignore messages sent by a bot
 	if m.Author.Bot {
 		return
 	}
 
+	// Ignore any message that wasn't intended for the bot
 	if messages[0] == prefix {
 		commands.RunCommand(messages[1:], s, m)
 	}

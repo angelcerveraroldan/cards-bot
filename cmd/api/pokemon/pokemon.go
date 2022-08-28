@@ -16,7 +16,10 @@ var (
 	searchKeys = []string{"name", "subtype", "hp"}
 )
 
-// GetCardData -> Use appropriate function to get card data
+// GetCardData
+//
+// Pokemon API call handler
+// Use appropriate function to get card data
 func GetCardData(args []string, s *discordgo.Session, m *discordgo.MessageCreate) {
 	getMethod := args[0]
 
@@ -58,6 +61,9 @@ func (card Card) otherInformation() string {
 	return fmt.Sprintf(" - Supertype: %s\n - Level: %s\n - Hp: %s\n - Type/s: %s\n - ID: %s", card.Supertype, level, card.Hp, strings.Join(card.Types, ", "), card.Id)
 }
 
+// printCardData
+//
+// Method for card that turns the cards data into an embed, and send it to the channel id in m.ChannelID
 func (card Card) printCardData(s *discordgo.Session, m *discordgo.MessageCreate) {
 	if card.Name == "" {
 		printError("Couldn't find card", s, m)
@@ -117,6 +123,9 @@ func (card Card) printCardData(s *discordgo.Session, m *discordgo.MessageCreate)
 	}
 }
 
+// printError
+//
+// When there is an error, send a message into the chat informing the user/s of said error
 func printError(err string, s *discordgo.Session, m *discordgo.MessageCreate) {
 	s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("There was an error: %s", err))
 }

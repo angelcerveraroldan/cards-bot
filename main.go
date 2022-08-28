@@ -1,7 +1,6 @@
 package main
 
 import (
-	"flag"
 	"fmt"
 	"github.com/angelcerveraroldan/cards-bot/cmd/commands"
 	"github.com/bwmarrin/discordgo"
@@ -16,9 +15,8 @@ const prefix = "!h"
 var discordToken string
 
 func init() {
-	flag.StringVar(&discordToken, "t", "", "Discord discordToken")
-
-	flag.Parse()
+	// Load discord token from docker env variables
+	discordToken = os.Getenv("TOKEN")
 
 	if discordToken == "" {
 		panic("Discord token needed")

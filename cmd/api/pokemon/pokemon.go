@@ -55,7 +55,7 @@ func (card Card) otherInformation() string {
 	if level == "" {
 		level = "N/A"
 	}
-	return fmt.Sprintf(" - Supertype: %s\n - Level: %s\n - Hp: %s\n - Type/s: %s - ID: %s", card.Supertype, level, card.Hp, strings.Join(card.Types, ", "), card.Id)
+	return fmt.Sprintf(" - Supertype: %s\n - Level: %s\n - Hp: %s\n - Type/s: %s\n - ID: %s", card.Supertype, level, card.Hp, strings.Join(card.Types, ", "), card.Id)
 }
 
 func (card Card) printCardData(s *discordgo.Session, m *discordgo.MessageCreate) {

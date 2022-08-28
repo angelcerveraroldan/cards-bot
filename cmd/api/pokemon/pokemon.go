@@ -12,7 +12,7 @@ const (
 
 var (
 	// TODO: Add params such as attack.name or set.id
-	searchKeys = []string{"nam", "subtype", "hp"}
+	searchKeys = []string{"name", "subtype", "hp"}
 )
 
 // GetCardData -> Use appropriate function to get card data

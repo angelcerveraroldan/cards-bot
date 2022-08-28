@@ -3,8 +3,10 @@ package pokemon
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/angelcerveraroldan/cards-bot/cmd/api"
 	"io"
 	"net/http"
+	"strings"
 )
 
 func urlResponse(URL string) ([]byte, error) {
@@ -52,4 +54,39 @@ func getCardById(id string) (Card, error) {
 	return rsp.Card, nil
 }
 
-// Get card by name
+// Get card by parameters
+func getCardsByParams(params []string) ([]Card, error) {
+	URL := baseURL + "/cards?q="
+
+	paramsMap := api.ParamsToMap(params, searchKeys)
+
+	var paramsStr []string
+	for k, v := range paramsMap {
+		paramsStr = append(paramsStr, fmt.Sprintf("%s:\"%s\"", k, v))
+	}
+
+	URL = fmt.Sprintf("%s%s", URL, URLEncode(strings.Join(paramsStr, " ")))
+
+	fmt.Println(URL)
+
+	responseData, err := urlResponse(URL)
+	if err != nil {
+		return []Card{}, err
+	}
+
+	var rsp CardsResponse
+	err = unmarshal(responseData, &rsp)
+	if err != nil {
+		return []Card{}, err
+	}
+
+	return rsp.Cards, nil
+}
+
+func URLEncode(s string) string {
+	spaces := strings.ReplaceAll(s, " ", "%20")
+	quotes := strings.ReplaceAll(spaces, "\"", "%22")
+	colon := strings.ReplaceAll(quotes, ":", "%3A")
+
+	return colon
+}

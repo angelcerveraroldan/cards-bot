@@ -67,8 +67,6 @@ func getCardsByParams(params []string) ([]Card, error) {
 
 	URL = fmt.Sprintf("%s%s", URL, URLEncode(strings.Join(paramsStr, " ")))
 
-	fmt.Println(URL)
-
 	responseData, err := urlResponse(URL)
 	if err != nil {
 		return []Card{}, err

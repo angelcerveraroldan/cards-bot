@@ -3,6 +3,7 @@ package pokemon
 import (
 	"fmt"
 	"github.com/bwmarrin/discordgo"
+	"math/rand"
 	"strings"
 )
 
@@ -23,13 +24,27 @@ func GetCardData(args []string, s *discordgo.Session, m *discordgo.MessageCreate
 	case "id":
 		card, err := getCardById(args[1])
 		if err != nil {
-			fmt.Println("Could not find card")
+			fmt.Println("Could not find card, err: ", err)
+			printError(fmt.Sprintf("Could not find card with id: %s", args[1]), s, m)
 			break
 		}
 
 		card.printCardData(s, m)
-	}
 
+	case "where":
+		cards, err := getCardsByParams(args[1:])
+		if err != nil {
+			fmt.Println("Could not find card, err: ", err)
+			printError("Could not find card with given parameters", s, m)
+			break
+		}
+
+		if len(cards) > 1 {
+			s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("There were %d cards with the requested parameters, showing one of them", len(cards)))
+		}
+
+		cards[rand.Intn(len(cards))].printCardData(s, m)
+	}
 }
 
 func (card Card) otherInformation() string {
@@ -38,10 +53,9 @@ func (card Card) otherInformation() string {
 	if level == "" {
 		level = "N/A"
 	}
-	return fmt.Sprintf(" - Supertype: %s\n - Level: %s\n - Hp: %s\n - Type/s: %s", card.Supertype, level, card.Hp, strings.Join(card.Types, ", "))
+	return fmt.Sprintf(" - Supertype: %s\n - Level: %s\n - Hp: %s\n - Type/s: %s - ID: %s", card.Supertype, level, card.Hp, strings.Join(card.Types, ", "), card.Id)
 }
 
-// URGENT TODO: Make this function print a prettier message, make this a method on type card?
 func (card Card) printCardData(s *discordgo.Session, m *discordgo.MessageCreate) {
 	if card.Name == "" {
 		printError("Couldn't find card", s, m)
@@ -52,11 +66,16 @@ func (card Card) printCardData(s *discordgo.Session, m *discordgo.MessageCreate)
 		{
 			Name:   "Name",
 			Value:  card.Name,
-			Inline: false,
+			Inline: true,
 		},
 		{
-			Name:   "Card ID",
-			Value:  card.Id,
+			Name:   "Card Number",
+			Value:  card.Number,
+			Inline: true,
+		},
+		{
+			Name:   string('\u200B'),
+			Value:  string('\u200B'),
 			Inline: true,
 		},
 		{
@@ -67,6 +86,11 @@ func (card Card) printCardData(s *discordgo.Session, m *discordgo.MessageCreate)
 		{
 			Name:   "Set Name",
 			Value:  card.Set.Name,
+			Inline: true,
+		},
+		{
+			Name:   string('\u200B'),
+			Value:  string('\u200B'),
 			Inline: true,
 		},
 		{

@@ -39,7 +39,9 @@ func GetCardData(args []string, s *discordgo.Session, m *discordgo.MessageCreate
 			break
 		}
 
-		if len(cards) > 1 {
+		if len(cards) == 250 {
+			s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("There were 250+ cards with the requested parameters, showing one of them"))
+		} else if len(cards) > 1 {
 			s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("There were %d cards with the requested parameters, showing one of them", len(cards)))
 		}
 

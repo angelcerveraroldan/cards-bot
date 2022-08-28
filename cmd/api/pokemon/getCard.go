@@ -55,7 +55,7 @@ func getCardById(id string) (Card, error) {
 }
 
 // Get card by parameters
-func GetCardsByParams(params []string) ([]Card, error) {
+func getCardsByParams(params []string) ([]Card, error) {
 	URL := baseURL + "/cards?q="
 
 	paramsMap := api.ParamsToMap(params, searchKeys)

@@ -6,6 +6,7 @@ import (
 	"github.com/angelcerveraroldan/cards-bot/cmd/api"
 	"io"
 	"net/http"
+	"strings"
 )
 
 func urlResponse(URL string) ([]byte, error) {
@@ -59,9 +60,14 @@ func GetCardsByParams(params []string) ([]Card, error) {
 
 	paramsMap := api.ParamsToMap(params, searchKeys)
 
+	var paramsStr []string
 	for k, v := range paramsMap {
-		URL = fmt.Sprintf("%s%s\"%s\"", URL, k, v)
+		paramsStr = append(paramsStr, fmt.Sprintf("%s:\"%s\"", k, v))
 	}
+
+	URL = fmt.Sprintf("%s%s", URL, URLEncode(strings.Join(paramsStr, " ")))
+
+	fmt.Println(URL)
 
 	responseData, err := urlResponse(URL)
 	if err != nil {
@@ -75,4 +81,12 @@ func GetCardsByParams(params []string) ([]Card, error) {
 	}
 
 	return rsp.Cards, nil
+}
+
+func URLEncode(s string) string {
+	spaces := strings.ReplaceAll(s, " ", "%20")
+	quotes := strings.ReplaceAll(spaces, "\"", "%22")
+	colon := strings.ReplaceAll(quotes, ":", "%3A")
+
+	return colon
 }

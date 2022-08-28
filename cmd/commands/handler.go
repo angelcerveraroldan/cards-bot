@@ -7,6 +7,9 @@ import (
 	"strings"
 )
 
+// RunCommand
+//
+// Check the command the user sent, and redirect to the right function
 func RunCommand(args []string, s *discordgo.Session, m *discordgo.MessageCreate) {
 	command := args[0]
 

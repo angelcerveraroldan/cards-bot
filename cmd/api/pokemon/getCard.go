@@ -36,7 +36,9 @@ func unmarshal[C Response](data []byte, rsp *C) error {
 	return nil
 }
 
-// id ex xy1-1
+// getCardById
+//
+// Each card has a unique id, given that id, find the card
 func getCardById(id string) (Card, error) {
 	URL := baseURL + "/cards/" + id
 
@@ -54,7 +56,11 @@ func getCardById(id string) (Card, error) {
 	return rsp.Card, nil
 }
 
-// Get card by parameters
+// getCardByParams
+//
+// Get an array of cards that match a set of parameters
+// Example parameter: name charizard
+// ^^ This will return an array containing all charizard cards
 func getCardsByParams(params []string) ([]Card, error) {
 	URL := baseURL + "/cards?q="
 

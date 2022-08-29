@@ -42,11 +42,11 @@ The parameters can be typed in any order
 Params:
 - name <card name>
 - subtypes <**one** of the subtypes you want the card to have>
-- hp <hp>  To have a hp range, type [x TO y]
+- hp <hp, to have a hp range, type [x TO y]>
 - types <**one** of the types you want the card to have>
-- set.name <set name>
-- set.id <set id>
-- attacks.name <name of on
+- set.name 
+- set.id 
+- attacks.name 
 - artist
 - rarity
 

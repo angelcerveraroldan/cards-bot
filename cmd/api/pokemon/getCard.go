@@ -68,7 +68,10 @@ func getCardsByParams(params []string) ([]Card, error) {
 
 	var paramsStr []string
 	for k, v := range paramsMap {
-		paramsStr = append(paramsStr, fmt.Sprintf("%s:\"%s\"", k, v))
+		// ignore empty keys
+		if v != "" {
+			paramsStr = append(paramsStr, fmt.Sprintf("%s:\"%s\"", k, v))
+		}
 	}
 
 	URL = fmt.Sprintf("%s%s", URL, URLEncode(strings.Join(paramsStr, " ")))

@@ -12,8 +12,7 @@ const (
 )
 
 var (
-	// TODO: Add params such as attack.name or set.id
-	searchKeys = []string{"name", "subtype", "hp"}
+	searchKeys = []string{"name", "subtypes", "hp", "types", "set.name", "set.id", "attacks.name", "artist", "rarity"}
 )
 
 // GetCardData
@@ -36,7 +35,7 @@ func GetCardData(args []string, s *discordgo.Session, m *discordgo.MessageCreate
 
 	case "where":
 		cards, err := getCardsByParams(args[1:])
-		if err != nil {
+		if err != nil || len(cards) == 0 {
 			fmt.Println("Could not find card, err: ", err)
 			printError("Could not find card with given parameters", s, m)
 			break
@@ -52,13 +51,20 @@ func GetCardData(args []string, s *discordgo.Session, m *discordgo.MessageCreate
 	}
 }
 
-func (card Card) otherInformation() string {
-	var level string
-	level = card.Level
-	if level == "" {
-		level = "N/A"
-	}
-	return fmt.Sprintf(" - Supertype: %s\n - Level: %s\n - Hp: %s\n - Type/s: %s\n - ID: %s", card.Supertype, level, card.Hp, strings.Join(card.Types, ", "), card.Id)
+func (card Card) dataToShow() struct {
+	setData  string
+	cardData string
+} {
+	setData := fmt.Sprintf(">>> **Name**: %s\n**Id**: %s", card.Set.Name, card.Set.Id)
+	cardData := fmt.Sprintf(">>> **Name**: %s\n**Id**: %s\n**Hp**: %s\n**Artist**: %s\n**Type/s**: %s",
+		card.Name,
+		card.Id, card.Hp,
+		card.Artist,
+		strings.Join(card.Types, ", "))
+	return struct {
+		setData  string
+		cardData string
+	}{setData, cardData}
 }
 
 // printCardData
@@ -72,38 +78,13 @@ func (card Card) printCardData(s *discordgo.Session, m *discordgo.MessageCreate)
 
 	fields := []*discordgo.MessageEmbedField{
 		{
-			Name:   "Name",
-			Value:  card.Name,
-			Inline: true,
+			Name:   "Card Data:",
+			Value:  card.dataToShow().cardData,
+			Inline: false,
 		},
 		{
-			Name:   "Card Number",
-			Value:  card.Number,
-			Inline: true,
-		},
-		{
-			Name:   string('\u200B'),
-			Value:  string('\u200B'),
-			Inline: true,
-		},
-		{
-			Name:   "Set ID",
-			Value:  card.Set.Id,
-			Inline: true,
-		},
-		{
-			Name:   "Set Name",
-			Value:  card.Set.Name,
-			Inline: true,
-		},
-		{
-			Name:   string('\u200B'),
-			Value:  string('\u200B'),
-			Inline: true,
-		},
-		{
-			Name:   "Other information",
-			Value:  card.otherInformation(),
+			Name:   "Set Data:",
+			Value:  card.dataToShow().setData,
 			Inline: false,
 		},
 	}
@@ -127,5 +108,9 @@ func (card Card) printCardData(s *discordgo.Session, m *discordgo.MessageCreate)
 //
 // When there is an error, send a message into the chat informing the user/s of said error
 func printError(err string, s *discordgo.Session, m *discordgo.MessageCreate) {
-	s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("There was an error: %s", err))
+	_, err2 := s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("There was an error: %s", err))
+	if err2 != nil {
+		fmt.Println("Error sending message")
+		return
+	}
 }

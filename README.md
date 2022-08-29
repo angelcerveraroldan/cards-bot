@@ -58,7 +58,9 @@ Because order doesn't matter, the query `set.id xy-1 name charizard` would be th
 
 Example:
 Response to command `!h pokemon where name char* hp 330 set.id swsh`:
+  
 <img src="docs/pokemon/imgs/pkm-by-params.png" style="width:200px;"/>
+  
 ## Running this bot
 
 To run this bot, run:

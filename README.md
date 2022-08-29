@@ -46,7 +46,7 @@ Params:
 - types <**one** of the types you want the card to have>
 - set.name 
 - set.id 
-- attacks.name 
+- attacks.name <the name of **one** of the attacks you want the card to have>
 - artist
 - rarity
 

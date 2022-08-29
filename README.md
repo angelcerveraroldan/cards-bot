@@ -29,7 +29,7 @@ Example:
 Response to command `!h pkm id xy1-2`:
 
 
-<img src="docs/pokemon/imgs/pkm-by-id.png" style="width:200px;"/>
+<img src="docs/pokemon/imgs/pkm-by-id.png" style="width:400px;"/>
 
 ### 3. Find Pokemon card/s by parameters
 
@@ -59,7 +59,7 @@ Because order doesn't matter, the query `set.id xy-1 name charizard` would be th
 Example:
 Response to command `!h pokemon where name char* hp 330 set.id swsh`:
   
-<img src="docs/pokemon/imgs/pkm-by-params.png" style="width:200px;"/>
+<img src="docs/pokemon/imgs/pkm-by-params.png" style="width:400px;"/>
   
 ## Running this bot
 

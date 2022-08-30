@@ -1,4 +1,4 @@
-package pokemon
+package mtg
 
 import (
 	"fmt"
@@ -6,41 +6,31 @@ import (
 	"strings"
 )
 
-// getCardById
-//
-// Each card has a unique id, given that id, find the card
-func getCardById(id string) (Card, error) {
-	URL := baseURL + "/cards/" + id
-
-	var rsp CardResponse
-	err := api.URLtoStruct(URL, &rsp)
-	if err != nil {
-		fmt.Println("Error unmarshaling card data")
-		return Card{}, err
-	}
-
-	return rsp.Card, nil
-}
-
 // getCardByParams
 //
 // Get an array of cards that match a set of parameters
 // Example parameter: name charizard
 // ^^ This will return an array containing all charizard cards
 func getCardsByParams(params []string) ([]Card, error) {
-	URL := baseURL + "/cards?q="
+	URL := baseURL + "/cards?"
 
 	paramsMap := api.ParamsToMap(params, searchKeys)
 
 	var paramsStr []string
 	for k, v := range paramsMap {
+
+		if strings.Contains(v, " AND ") {
+			v = strings.ReplaceAll(v, " AND ", ",")
+		}
+
 		// ignore empty keys
 		if v != "" {
-			paramsStr = append(paramsStr, fmt.Sprintf("%s:\"%s\"", k, v))
+			paramsStr = append(paramsStr, fmt.Sprintf("%s=\"%s\"", k, v))
 		}
 	}
 
-	URL = fmt.Sprintf("%s%s", URL, api.URLEncode(strings.Join(paramsStr, " ")))
+	URL = fmt.Sprintf("%s%s", URL, api.URLEncode(strings.Join(paramsStr, "&")))
+	fmt.Println(URL)
 
 	var rsp CardsResponse
 	err := api.URLtoStruct(URL, &rsp)

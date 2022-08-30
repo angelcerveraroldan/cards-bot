@@ -40,7 +40,7 @@ func getCardsByParams(params []string) ([]Card, error) {
 		}
 	}
 
-	URL = fmt.Sprintf("%s%s", URL, URLEncode(strings.Join(paramsStr, " ")))
+	URL = fmt.Sprintf("%s%s", URL, api.URLEncode(strings.Join(paramsStr, " ")))
 
 	var rsp CardsResponse
 	err := api.URLtoStruct(URL, &rsp)
@@ -50,12 +50,4 @@ func getCardsByParams(params []string) ([]Card, error) {
 	}
 
 	return rsp.Cards, nil
-}
-
-func URLEncode(s string) string {
-	spaces := strings.ReplaceAll(s, " ", "%20")
-	quotes := strings.ReplaceAll(spaces, "\"", "%22")
-	colon := strings.ReplaceAll(quotes, ":", "%3A")
-
-	return colon
 }

@@ -1,6 +1,11 @@
 package api
 
-import "fmt"
+import (
+	"encoding/json"
+	"fmt"
+	"io"
+	"net/http"
+)
 
 // Contains
 //
@@ -44,4 +49,28 @@ func ParamsToMap(params []string, keywords []string) map[string]string {
 	}
 
 	return paramsMap
+}
+
+func URLtoStruct(URL string, rsp any) error {
+	// Get URL response
+	response, err := http.Get(URL)
+	if err != nil {
+		fmt.Println("Error reading url: ", err)
+		return err
+	}
+
+	responseData, err := io.ReadAll(response.Body)
+	if err != nil {
+		fmt.Println("Error getting data from url: ", err)
+		return err
+	}
+
+	// Unmarshal
+	err = json.Unmarshal(responseData, &rsp)
+	if err != nil {
+		fmt.Println("Could not unmarshal card data: ", err)
+		return err
+	}
+
+	return nil
 }

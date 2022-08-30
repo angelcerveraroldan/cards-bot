@@ -2,8 +2,8 @@ package pokemon
 
 import (
 	"fmt"
+	"github.com/angelcerveraroldan/cards-bot/cmd/messages"
 	"github.com/bwmarrin/discordgo"
-	"math/rand"
 	"strings"
 )
 
@@ -20,6 +20,11 @@ var (
 // Pokemon API call handler
 // Use appropriate function to get card data
 func GetCardData(args []string, s *discordgo.Session, m *discordgo.MessageCreate) {
+	if len(args) < 1 {
+		// TODO: Implement helper message here
+		return
+	}
+
 	getMethod := args[0]
 
 	switch getMethod {
@@ -27,64 +32,60 @@ func GetCardData(args []string, s *discordgo.Session, m *discordgo.MessageCreate
 		card, err := getCardById(args[1])
 		if err != nil {
 			fmt.Println("Could not find card, err: ", err)
-			printError(fmt.Sprintf("Could not find card with id: %s", args[1]), s, m)
-			break
+			messages.Error(s, m, fmt.Sprintf("Could not find card with id: %s", args[1]))
+			return
 		}
 
-		card.printCardData(s, m)
+		card.sendEmbed(s, m)
 
 	case "where":
 		cards, err := getCardsByParams(args[1:])
 		if err != nil || len(cards) == 0 {
 			fmt.Println("Could not find card, err: ", err)
-			printError("Could not find card with given parameters", s, m)
-			break
+			messages.Error(s, m, "Could not find card with given parameters")
+			return
 		}
 
-		if len(cards) == 250 {
-			s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("There were 250+ cards with the requested parameters, showing one of them"))
-		} else if len(cards) > 1 {
-			s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("There were %d cards with the requested parameters, showing one of them", len(cards)))
+		if len(cards) > 1 {
+			messages.Send(s, m, fmt.Sprintf("There multiple cards with the requested parameters, showing one of them"))
 		}
 
-		cards[rand.Intn(len(cards))].printCardData(s, m)
+		cards[0].sendEmbed(s, m)
 	}
 }
 
-func (card Card) dataToShow() struct {
-	setData  string
-	cardData string
-} {
-	setData := fmt.Sprintf(">>> **Name**: %s\n**Id**: %s", card.Set.Name, card.Set.Id)
-	cardData := fmt.Sprintf(">>> **Name**: %s\n**Id**: %s\n**Hp**: %s\n**Artist**: %s\n**Type/s**: %s",
+func (card Card) cardData() string {
+	return fmt.Sprintf(">>> **Name:** %s\n**Id:** %s\n**Hp:** %s\n**Artist:** %s\n**Type/s:** %s",
 		card.Name,
-		card.Id, card.Hp,
+		card.Id,
+		card.Hp,
 		card.Artist,
 		strings.Join(card.Types, ", "))
-	return struct {
-		setData  string
-		cardData string
-	}{setData, cardData}
+
 }
 
-// printCardData
+func (card Card) setData() string {
+	return fmt.Sprintf(">>> **Name:** %s\n**Id:** %s", card.Set.Name, card.Set.Id)
+}
+
+// sendEmbed
 //
 // Method for card that turns the cards data into an embed, and send it to the channel id in m.ChannelID
-func (card Card) printCardData(s *discordgo.Session, m *discordgo.MessageCreate) {
+func (card Card) sendEmbed(s *discordgo.Session, m *discordgo.MessageCreate) {
 	if card.Name == "" {
-		printError("Couldn't find card", s, m)
+		messages.Error(s, m, "Couldn't find card")
 		return
 	}
 
 	fields := []*discordgo.MessageEmbedField{
 		{
 			Name:   "Card Data:",
-			Value:  card.dataToShow().cardData,
+			Value:  card.cardData(),
 			Inline: false,
 		},
 		{
 			Name:   "Set Data:",
-			Value:  card.dataToShow().setData,
+			Value:  card.setData(),
 			Inline: false,
 		},
 	}
@@ -100,17 +101,6 @@ func (card Card) printCardData(s *discordgo.Session, m *discordgo.MessageCreate)
 	})
 	if err != nil {
 		fmt.Println(err)
-		return
-	}
-}
-
-// printError
-//
-// When there is an error, send a message into the chat informing the user/s of said error
-func printError(err string, s *discordgo.Session, m *discordgo.MessageCreate) {
-	_, err2 := s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("There was an error: %s", err))
-	if err2 != nil {
-		fmt.Println("Error sending message")
 		return
 	}
 }

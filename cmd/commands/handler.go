@@ -2,6 +2,7 @@ package commands
 
 import (
 	"fmt"
+	"github.com/angelcerveraroldan/cards-bot/cmd/api/mtg"
 	"github.com/angelcerveraroldan/cards-bot/cmd/api/pokemon"
 	"github.com/bwmarrin/discordgo"
 	"strings"
@@ -18,6 +19,8 @@ func RunCommand(args []string, s *discordgo.Session, m *discordgo.MessageCreate)
 		heartBeat(s, m)
 	case "pkm", "pokemon":
 		pokemon.GetCardData(args[1:], s, m)
+	case "mtg", "magic":
+		mtg.GetCardData(args[1:], s, m)
 	}
 
 }

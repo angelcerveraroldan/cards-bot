@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"strings"
 )
 
 // Contains
@@ -74,12 +73,4 @@ func URLtoStruct(URL string, rsp any) error {
 	}
 
 	return nil
-}
-
-func URLEncode(s string) string {
-	spaces := strings.ReplaceAll(s, " ", "%20")
-	quotes := strings.ReplaceAll(spaces, "\"", "%22")
-	colon := strings.ReplaceAll(quotes, ":", "%3A")
-
-	return colon
 }

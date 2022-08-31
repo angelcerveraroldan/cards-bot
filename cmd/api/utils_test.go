@@ -19,7 +19,7 @@ func TestParamsToMap(t *testing.T) {
 			keywords: strings.Fields("name age id"),
 			wanted: map[string]string{
 				"name": "angel cervera roldan",
-				"age":  "19",
+				"age":  "18",
 				"id":   "13v1",
 			},
 		},
@@ -28,7 +28,7 @@ func TestParamsToMap(t *testing.T) {
 			keywords: strings.Fields("name age id"),
 			wanted: map[string]string{
 				"name": "angel cervera roldan",
-				"age":  "19",
+				"age":  "18",
 				"id":   "13v1",
 			},
 		},

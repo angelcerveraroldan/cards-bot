@@ -35,7 +35,7 @@ The following parameters can be used:
 - rarity
 - 
 Example:
-Response to command `/card-where name: charizard hp: 330`:
+Response to command `/card-where name charizard hp 330`:
   
 <img src="docs/pokemon/imgs/pkm-by-params.png" style="width:400px;"/>
   

@@ -1,14 +1,22 @@
 package pokemon
 
+/*
+This file will be used to gather data from the pokemon api
+
+Every function here, should take search parameters as params, and return []Card or Card (along with error)
+*/
+
 import (
 	"fmt"
 	"github.com/angelcerveraroldan/cards-bot/cmd/api"
 	"strings"
 )
 
-// getCardById
-//
-// Each card has a unique id, given that id, find the card
+/*
+getCardById
+
+Each card has a unique id, given that id, find the card
+*/
 func getCardById(id string) (Card, error) {
 	URL := baseURL + "/cards/" + id
 
@@ -22,18 +30,16 @@ func getCardById(id string) (Card, error) {
 	return rsp.Card, nil
 }
 
-// getCardByParams
-//
-// Get an array of cards that match a set of parameters
-// Example parameter: name charizard
-// ^^ This will return an array containing all charizard cards
-func getCardsByParams(params []string) ([]Card, error) {
+/*
+getCardByParams
+
+get a card that matches certain parameters
+*/
+func getCardsByParams(params map[string]string) ([]Card, error) {
 	URL := baseURL + "/cards?q="
 
-	paramsMap := api.ParamsToMap(params, searchKeys)
-
 	var paramsStr []string
-	for k, v := range paramsMap {
+	for k, v := range params {
 		// ignore empty keys
 		if v != "" {
 			paramsStr = append(paramsStr, fmt.Sprintf("%s:\"%s\"", k, v))
@@ -52,6 +58,11 @@ func getCardsByParams(params []string) ([]Card, error) {
 	return rsp.Cards, nil
 }
 
+/*
+URLEncode
+
+When making the query, certain characters need to be encoded, for example ' ' should be %20 or +
+*/
 func URLEncode(s string) string {
 	spaces := strings.ReplaceAll(s, " ", "%20")
 	quotes := strings.ReplaceAll(spaces, "\"", "%22")

@@ -1,11 +1,5 @@
 package pokemon
 
-// Response
-// This will be used for generics, can make functions to handle both responses that have various cards, or just one card
-type Response interface {
-	CardsResponse | CardResponse
-}
-
 // CardsResponse
 // The response given when there are multiple cards
 // E.g. Get card by name

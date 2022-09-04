@@ -1,106 +1,65 @@
 package pokemon
 
+/*
+This file is the pokemon handler
+*/
+
 import (
-	"fmt"
-	"github.com/angelcerveraroldan/cards-bot/cmd/messages"
 	"github.com/bwmarrin/discordgo"
-	"strings"
 )
 
 const (
 	baseURL = "https://api.pokemontcg.io/v2"
 )
 
-var (
-	searchKeys = []string{"name", "subtypes", "hp", "types", "set.name", "set.id", "attacks.name", "artist", "rarity"}
-)
-
-// GetCardData
-//
-// Pokemon API call handler
-// Use appropriate function to get card data
-func GetCardData(args []string, s *discordgo.Session, m *discordgo.MessageCreate) {
-	if len(args) < 1 {
-		// TODO: Implement helper message here
-		return
-	}
-
-	getMethod := args[0]
-
-	switch getMethod {
-	case "id":
-		card, err := getCardById(args[1])
-		if err != nil {
-			fmt.Println("Could not find card, err: ", err)
-			messages.Error(s, m, fmt.Sprintf("Could not find card with id: %s", args[1]))
-			return
-		}
-
-		card.sendEmbed(s, m)
-
-	case "where":
-		cards, err := getCardsByParams(args[1:])
-		if err != nil || len(cards) == 0 {
-			fmt.Println("Could not find card, err: ", err)
-			messages.Error(s, m, "Could not find card with given parameters")
-			return
-		}
-
-		if len(cards) > 1 {
-			messages.Send(s, m, fmt.Sprintf("There multiple cards with the requested parameters, showing one of them"))
-		}
-
-		cards[0].sendEmbed(s, m)
-	}
+// Commands for pokemon
+var Commands = []*discordgo.ApplicationCommand{
+	{
+		Name:        "card-id",
+		Description: "Get a card with a given id",
+		Options: []*discordgo.ApplicationCommandOption{
+			{
+				Type:        discordgo.ApplicationCommandOptionString,
+				Name:        "id",
+				Description: "id of desired card",
+				Required:    true,
+			},
+		},
+	},
+	{
+		Name:        "card-where",
+		Description: "Get a card with given parameters, such as name: Charizard, hp: 200, etc...",
+		Options: []*discordgo.ApplicationCommandOption{
+			{
+				Type:        discordgo.ApplicationCommandOptionString,
+				Name:        "name",
+				Description: "Specify cards name",
+				Required:    false,
+			},
+			{
+				Type:        discordgo.ApplicationCommandOptionString,
+				Name:        "artist",
+				Description: "Specify the name of the artist that drew the cards image",
+				Required:    false,
+			},
+			{
+				Type:        discordgo.ApplicationCommandOptionString,
+				Name:        "rarity",
+				Description: "Specify the rarity of the card",
+				Required:    false,
+			},
+			{
+				Type:        discordgo.ApplicationCommandOptionString,
+				Name:        "hp",
+				Description: "Specify the health points of the card",
+				Required:    false,
+			},
+		},
+	},
 }
 
-func (card Card) cardData() string {
-	return fmt.Sprintf(">>> **Name:** %s\n**Id:** %s\n**Hp:** %s\n**Artist:** %s\n**Type/s:** %s",
-		card.Name,
-		card.Id,
-		card.Hp,
-		card.Artist,
-		strings.Join(card.Types, ", "))
-
-}
-
-func (card Card) setData() string {
-	return fmt.Sprintf(">>> **Name:** %s\n**Id:** %s", card.Set.Name, card.Set.Id)
-}
-
-// sendEmbed
-//
-// Method for card that turns the cards data into an embed, and send it to the channel id in m.ChannelID
-func (card Card) sendEmbed(s *discordgo.Session, m *discordgo.MessageCreate) {
-	if card.Name == "" {
-		messages.Error(s, m, "Couldn't find card")
-		return
-	}
-
-	fields := []*discordgo.MessageEmbedField{
-		{
-			Name:   "Card Data:",
-			Value:  card.cardData(),
-			Inline: false,
-		},
-		{
-			Name:   "Set Data:",
-			Value:  card.setData(),
-			Inline: false,
-		},
-	}
-
-	_, err := s.ChannelMessageSendEmbed(m.ChannelID, &discordgo.MessageEmbed{
-		Title:       "Pokemon card",
-		Description: "Information on the requested card",
-		Color:       0x0099FF,
-		Image: &discordgo.MessageEmbedImage{
-			URL: card.Images.Small,
-		},
-		Fields: fields,
-	})
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
+// CommandsHandler for pokemon
+var CommandsHandler = map[string]func(s *discordgo.Session, i *discordgo.InteractionCreate){
+	"card-id":    cardId,
+	"card-where": cardParams,
 }

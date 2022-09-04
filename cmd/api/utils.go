@@ -3,54 +3,30 @@ package api
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/bwmarrin/discordgo"
 	"io"
 	"net/http"
 )
 
-// Contains
-//
-// Check if slice of type A contains item
-func Contains[A comparable](slice []A, item A) bool {
-	for _, a := range slice {
-		if a == item {
-			return true
-		}
+/*
+OptionsToMap
+
+Convert the options passed in by the user into a map
+"parameter": "parameter value", eg. "name": "charizard"
+*/
+func OptionsToMap(opts []*discordgo.ApplicationCommandInteractionDataOption) map[string]*discordgo.ApplicationCommandInteractionDataOption {
+	optionsMap := make(map[string]*discordgo.ApplicationCommandInteractionDataOption)
+	for _, option := range opts {
+		optionsMap[option.Name] = option
 	}
 
-	return false
+	return optionsMap
 }
 
-// ParamsToMap
-//
-// This function will turn a slice of strings into a map from string to string.
-//
-// It takes two parameters, one being the slice of strings from which we want to generate the map
-// the other one being the keys for the map.
-func ParamsToMap(params []string, keywords []string) map[string]string {
-	paramsMap := make(map[string]string)
-	currentKey := ""
-
-	for _, s := range params {
-		if Contains(keywords, s) {
-			currentKey = s
-			continue
-		}
-
-		if currentKey == "" {
-			continue
-		}
-
-		switch paramsMap[currentKey] {
-		case "":
-			paramsMap[currentKey] = s
-		default:
-			paramsMap[currentKey] = fmt.Sprintf("%s %s", paramsMap[currentKey], s)
-		}
-	}
-
-	return paramsMap
-}
-
+/*
+URLtoStruct
+TODO: Return an error if the card was not found
+*/
 func URLtoStruct(URL string, rsp any) error {
 	// Get URL response
 	response, err := http.Get(URL)

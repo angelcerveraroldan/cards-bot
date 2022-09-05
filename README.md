@@ -41,10 +41,9 @@ Response to command `/card-where name charizard hp 330`:
   
 ## Running this bot
 
-To run this bot, run:
-
-1. `docker build --tag docker-bot .` -> Builds binary
-2. `docker run --env-file .env docker-bot` -> Executes binary
+1. Build: `bash build.bash` -> Build docker image
+2. Run: `bash run.bash <path to env>` -> Run docker image
+3. Build and run: `bash build_run.bash <path to env>` -> Both of the above
 
 The env file, should contain the following:
 ```

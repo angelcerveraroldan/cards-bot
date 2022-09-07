@@ -66,7 +66,6 @@ When making the query, certain characters need to be encoded, for example ' ' sh
 func URLEncode(s string) string {
 	spaces := strings.ReplaceAll(s, " ", "%20")
 	quotes := strings.ReplaceAll(spaces, "\"", "%22")
-	colon := strings.ReplaceAll(quotes, ":", "%3A")
 
-	return colon
+	return quotes
 }
